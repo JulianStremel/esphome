@@ -188,17 +188,17 @@ void SEVENSEGMENTComponent::setup() {
 
 void SEVENSEGMENTComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "SEVENSEG:");
-  ESP_LOGCONFIG(TAG, "A Pin: %s", this->a_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "B Pin: %s", this->b_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "C Pin: %s", this->c_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "D Pin: %s", this->d_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "E Pin: %s", this->e_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "F Pin: %s", this->f_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "G Pin: %s", this->g_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "DP Pin: %s", this->dp_pin_->dump_summary());
+  ESP_LOGCONFIG(TAG, "A Pin: %s", this->a_pin_->dump_summary().c_str());
+  ESP_LOGCONFIG(TAG, "B Pin: %s", this->b_pin_->dump_summary().c_str());
+  ESP_LOGCONFIG(TAG, "C Pin: %s", this->c_pin_->dump_summary().c_str());
+  ESP_LOGCONFIG(TAG, "D Pin: %s", this->d_pin_->dump_summary().c_str());
+  ESP_LOGCONFIG(TAG, "E Pin: %s", this->e_pin_->dump_summary().c_str());
+  ESP_LOGCONFIG(TAG, "F Pin: %s", this->f_pin_->dump_summary().c_str());
+  ESP_LOGCONFIG(TAG, "G Pin: %s", this->g_pin_->dump_summary().c_str());
+  ESP_LOGCONFIG(TAG, "DP Pin: %s", this->dp_pin_->dump_summary().c_str());
   uint8_t ct = 0;
   for (GPIOPin *pin : this->digits_) {
-    ESP_LOGCONFIG(TAG, "Digit %n Pin: %s", ct, pin->dump_summary());
+    ESP_LOGCONFIG(TAG, "Digit %n Pin: %s", ct, pin->dump_summary().c_str());
     ct++;
   }
   ESP_LOGCONFIG(TAG, "Writer: %s", this->writer_ ? "YES" : "NO");
