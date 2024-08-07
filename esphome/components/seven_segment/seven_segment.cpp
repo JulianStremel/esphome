@@ -150,6 +150,10 @@ void SEVENSEGMENTComponent::setup() {
     ESP_LOGE(TAG, "Not all pins are defined.");
     return;
   }
+  if (num_digits_ > BUFFER_SIZE) {
+    ESP_LOGE(TAG, "Number of digits is greater than buffer size.");
+    return;
+  }
   this->a_pin_->pin_mode(gpio::FLAG_OUTPUT);
   this->a_pin_->setup();
   this->a_pin_->digital_write(false);
@@ -181,6 +185,7 @@ void SEVENSEGMENTComponent::setup() {
     pin->digital_write(false);
   }
   this->setup_complete_ = true;
+  this->buffer_[BUFFER_SIZE] = {0};
 }
 
 void SEVENSEGMENTComponent::dump_config() {
@@ -316,6 +321,8 @@ uint8_t SEVENSEGMENTComponent::strftime(uint8_t pos, const char *format, ESPTime
 }
 uint8_t SEVENSEGMENTComponent::strftime(const char *format, ESPTime time) { return this->strftime(0, format, time); }
 
+}  // namespace seven_segment
+}  // namespace esphome
 /* old lambda function
 std::string text = id(home_assistant_text).state;
 
@@ -395,6 +402,3 @@ std::string text = id(home_assistant_text).state;
           }
 
 */
-
-}  // namespace seven_segment
-}  // namespace esphome
