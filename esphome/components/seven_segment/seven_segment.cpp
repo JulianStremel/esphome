@@ -150,10 +150,6 @@ void SEVENSEGMENTComponent::setup() {
     ESP_LOGE(TAG, "Not all pins are defined.");
     return;
   }
-  if (num_digits_ > BUFFER_SIZE) {
-    ESP_LOGE(TAG, "Number of digits is greater than buffer size.");
-    return;
-  }
   this->a_pin_->pin_mode(gpio::FLAG_OUTPUT);
   this->a_pin_->setup();
   this->a_pin_->digital_write(false);
@@ -178,14 +174,16 @@ void SEVENSEGMENTComponent::setup() {
   this->dp_pin_->pin_mode(gpio::FLAG_OUTPUT);
   this->dp_pin_->setup();
   this->dp_pin_->digital_write(false);
-
+  uint8_t ct = 0;
   for (GPIOPin *pin : this->digits_) {
     pin->pin_mode(gpio::FLAG_OUTPUT);
     pin->setup();
     pin->digital_write(false);
+    ct++;
   }
+  this->num_digits_ = ct;
+  this->buffer_ = new uint8_t[this->num_digits_];
   this->setup_complete_ = true;
-  this->buffer_[BUFFER_SIZE] = {0};
 }
 
 void SEVENSEGMENTComponent::dump_config() {
@@ -203,11 +201,7 @@ void SEVENSEGMENTComponent::dump_config() {
     ESP_LOGCONFIG(TAG, "Digit %u Pin: %s", ct, pin->dump_summary().c_str());
     ct++;
   }
-  this->num_digits_ = ct;
   ESP_LOGCONFIG(TAG, "Number of Digits: %u", this->num_digits_);
-  if (this->num_digits_ == 0) {
-    ESP_LOGE(TAG, "No digits defined.");
-  }
   ESP_LOGCONFIG(TAG, "Writer: %s", this->writer_ ? "YES" : "NO");
   ESP_LOGCONFIG(TAG, "Setup Complete: %s", this->setup_complete_ ? "YES" : "NO");
   // ESP_LOGCONFIG(TAG, "  Number of Digits: %u", this->num_chips_);
