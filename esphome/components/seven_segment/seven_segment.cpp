@@ -203,7 +203,9 @@ void SEVENSEGMENTComponent::clear_display_() {
 void SEVENSEGMENTComponent::set_digit_(uint8_t digit, uint8_t ch, bool dot) {
   uint8_t segments = 0;
   // concat to printable ASCII characters
+  ESP_LOGI(TAG, "Setting digit %d to %d", digit, ch);
   if (ch < 32) {
+    ESP_LOGI(TAG, "digit was too low %d", ch);
     ch = 0;
   } else {
     ch = ch - 32;
@@ -211,10 +213,13 @@ void SEVENSEGMENTComponent::set_digit_(uint8_t digit, uint8_t ch, bool dot) {
   if (ch < 95) {
     segments = SEVENSEG_ASCII_TO_RAW[ch];
   } else {
+    ESP_LOGI(TAG, "digit was too high %d", ch);
     segments = 0;
   }
-
   segments = SEVENSEG_ASCII_TO_RAW[ch];
+
+  // write binary representation of the segments
+  ESP_LOGI(TAG, "Segments to %d", segments);
 
   this->clear_display_();
   this->g1_pin_->digital_write(digit == 0);
@@ -256,6 +261,7 @@ uint8_t SEVENSEGMENTComponent::printf(const char *format, ...) {
     return this->print(buffer);
   return 0;
 }
+
 void SEVENSEGMENTComponent::set_writer(seven_segment_writer_t &&writer) { this->writer_ = writer; }
 
 // void SEVENSEGMENTComponent::set_num_chips(uint8_t num_chips) { this->num_chips_ = num_chips; }
