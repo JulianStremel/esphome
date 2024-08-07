@@ -10,6 +10,8 @@ static const char *const TAG = "seven_segment";
 
 static const uint8_t SEVENSEG_UNKNOWN_CHAR = 0b00000000;
 
+bool setup_complete = false;
+
 const uint8_t SEVENSEG_ASCII_TO_RAW[95] PROGMEM = {
     0b00000000,             // ' ', ord 0x20
     0b10110000,             // '!', ord 0x21
@@ -110,7 +112,7 @@ const uint8_t SEVENSEG_ASCII_TO_RAW[95] PROGMEM = {
 
 float SEVENSEGMENTComponent::get_setup_priority() const { return setup_priority::PROCESSOR; }
 void SEVENSEGMENTComponent::setup() {
-  ESP_LOGI(TAG, "Setting up 7 Segment...");
+  ESP_LOGCONFIG(TAG, "Setting up 7 Segment...");
   // ckeck all pins are defined
   if (!this->a_pin_ || !this->b_pin_ || !this->c_pin_ || !this->d_pin_ || !this->e_pin_ || !this->f_pin_ ||
       !this->g_pin_ || !this->dp_pin_) {
@@ -156,7 +158,11 @@ void SEVENSEGMENTComponent::setup() {
   this->g4_pin_->setup();
   this->g4_pin_->digital_write(false);
 
-  // log all pin numbers and states
+  setup_complete = true;
+}
+
+void SEVENSEGMENTComponent::dump_config() {
+  ESP_LOGCONFIG(TAG, "SEVENSEG:");
   ESP_LOGCONFIG(TAG, "A Pin: %u", this->a_pin_->dump_summary());
   ESP_LOGCONFIG(TAG, "B Pin: %u", this->b_pin_->dump_summary());
   ESP_LOGCONFIG(TAG, "C Pin: %u", this->c_pin_->dump_summary());
@@ -169,10 +175,8 @@ void SEVENSEGMENTComponent::setup() {
   ESP_LOGCONFIG(TAG, "G2 Pin: %u", this->g2_pin_->dump_summary());
   ESP_LOGCONFIG(TAG, "G3 Pin: %u", this->g3_pin_->dump_summary());
   ESP_LOGCONFIG(TAG, "G4 Pin: %u", this->g4_pin_->dump_summary());
-}
-
-void SEVENSEGMENTComponent::dump_config() {
-  ESP_LOGCONFIG(TAG, "SEVENSEG:");
+  ESP_LOGCONFIG(TAG, "Writer: %s", this->writer_ ? "YES" : "NO");
+  ESP_LOGCONFIG(TAG, "Setup Complete: %s", setup_complete ? "YES" : "NO");
   // ESP_LOGCONFIG(TAG, "  Number of Digits: %u", this->num_chips_);
   LOG_UPDATE_INTERVAL(this);
 }
