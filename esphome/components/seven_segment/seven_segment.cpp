@@ -157,7 +157,6 @@ void SEVENSEGMENTComponent::setup() {
   this->g4_pin_->pin_mode(gpio::FLAG_OUTPUT);
   this->g4_pin_->setup();
   this->g4_pin_->digital_write(false);
-
   setup_complete = true;
 }
 
@@ -201,13 +200,27 @@ void SEVENSEGMENTComponent::clear_display_() {
 }
 
 void SEVENSEGMENTComponent::set_digit_(uint8_t digit, uint8_t ch, bool dot) {
+  uint8_t segments = 0;
+  // concat to printable ASCII characters
+  if (ch < 32) {
+    ch = 0;
+  } else {
+    ch = ch - 32;
+  }
+  if (ch < 95) {
+    segments = SEVENSEG_ASCII_TO_RAW[ch];
+  } else {
+    segments = 0;
+  }
+
+  segments = SEVENSEG_ASCII_TO_RAW[ch];
+
   this->clear_display_();
   this->g1_pin_->digital_write(digit == 0);
   this->g2_pin_->digital_write(digit == 1);
   this->g3_pin_->digital_write(digit == 2);
   this->g4_pin_->digital_write(digit == 3);
 
-  uint8_t segments = SEVENSEG_ASCII_TO_RAW[ch];
   this->a_pin_->digital_write((segments & 0b10000000) || dot);
   this->a_pin_->digital_write(segments & 0b01000000);
   this->a_pin_->digital_write(segments & 0b00100000);
@@ -220,7 +233,10 @@ void SEVENSEGMENTComponent::set_digit_(uint8_t digit, uint8_t ch, bool dot) {
 };
 
 uint8_t SEVENSEGMENTComponent::print(uint8_t start_pos, const char *str) {
-  // print implementation
+  this->set_digit_(0, 0, false);
+  this->set_digit_(1, 55, false);
+  this->set_digit_(2, 48, false);
+  this->set_digit_(3, 0, false);
   return 0;
 }
 
