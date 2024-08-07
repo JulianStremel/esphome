@@ -68,6 +68,10 @@ class SEVENSEGMENTComponent : public PollingComponent {
   GPIOPin *dp_pin_{nullptr};
   std::vector<GPIOPin *> digits_;
 
+  uint8_t buffer_[256];
+  bool setup_complete_{false};
+  uint8_t num_digits_{0};
+
   // uint8_t num_chips_{1};
   optional<seven_segment_writer_t> writer_{};
 };

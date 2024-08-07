@@ -10,8 +10,6 @@ static const char *const TAG = "seven_segment";
 
 static const uint8_t SEVENSEG_UNKNOWN_CHAR = 0b00000000;
 
-bool setup_complete = false;
-
 const uint8_t SEVENSEG_ASCII_TO_RAW[128] PROGMEM = {
     0b00000000,             // 0x00
     0b00000000,             // 0x01
@@ -152,7 +150,6 @@ void SEVENSEGMENTComponent::setup() {
     ESP_LOGE(TAG, "Not all pins are defined.");
     return;
   }
-
   this->a_pin_->pin_mode(gpio::FLAG_OUTPUT);
   this->a_pin_->setup();
   this->a_pin_->digital_write(false);
@@ -183,7 +180,7 @@ void SEVENSEGMENTComponent::setup() {
     pin->setup();
     pin->digital_write(false);
   }
-  setup_complete = true;
+  this->setup_complete_ = true;
 }
 
 void SEVENSEGMENTComponent::dump_config() {
@@ -198,20 +195,25 @@ void SEVENSEGMENTComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "DP Pin: %s", this->dp_pin_->dump_summary().c_str());
   uint8_t ct = 0;
   for (GPIOPin *pin : this->digits_) {
-    ESP_LOGCONFIG(TAG, "Digit %d Pin: %s", ct, pin->dump_summary().c_str());
+    ESP_LOGCONFIG(TAG, "Digit %u Pin: %s", ct, pin->dump_summary().c_str());
     ct++;
   }
+  this->num_digits_ = ct;
+  ESP_LOGCONFIG(TAG, "Number of Digits: %u", this->num_digits_);
+  if (this->num_digits_ == 0) {
+    ESP_LOGE(TAG, "No digits defined.");
+  }
   ESP_LOGCONFIG(TAG, "Writer: %s", this->writer_ ? "YES" : "NO");
-  ESP_LOGCONFIG(TAG, "Setup Complete: %s", setup_complete ? "YES" : "NO");
+  ESP_LOGCONFIG(TAG, "Setup Complete: %s", this->setup_complete_ ? "YES" : "NO");
   // ESP_LOGCONFIG(TAG, "  Number of Digits: %u", this->num_chips_);
   LOG_UPDATE_INTERVAL(this);
 }
 
 void SEVENSEGMENTComponent::display() {
-  this->set_digit_(0, 0, false);
-  this->set_digit_(1, 0x48, false);
-  this->set_digit_(2, 0x49, false);
-  this->set_digit_(3, 0, false);
+  uint8_t ct = 0;
+  for (GPIOPin *pin : this->digits_) {
+    this->set_digit_(ct, this->buffer_[ct], false);
+  }
 }
 
 void SEVENSEGMENTComponent::update() { this->display(); }
@@ -258,29 +260,16 @@ void SEVENSEGMENTComponent::set_digit_(uint8_t digit, uint8_t ch, bool dot) {
 };
 
 uint8_t SEVENSEGMENTComponent::print(uint8_t start_pos, const char *str) {
+  this->buffer_[256] = {0};
+  uint8_t len = strlen(str);
   uint8_t pos = start_pos;
-  for (; *str != '\0'; str++) {
-    uint8_t data = SEVENSEG_UNKNOWN_CHAR;
-    if (*str >= ' ' && *str <= '~')
-      data = progmem_read_byte(&SEVENSEG_ASCII_TO_RAW[*str - ' ']);
-
-    if (data == SEVENSEG_UNKNOWN_CHAR) {
-      ESP_LOGW(TAG, "Encountered character '%c' with no SEVENSEG representation while translating string!", *str);
+  uint8_t ct = 0;
+  for (uint8_t i = start_pos; i < 256; i++) {
+    if (ct >= len) {
+      break;
     }
-    if (*str == '.') {
-      if (pos != start_pos)
-        pos--;
-      this->set_digit_(pos, 0, true);
-    } else {
-      if (pos >= 4) {
-        ESP_LOGW(TAG, "Encountered character '%c' with no SEVENSEG representation while translating string!", *str);
-        continue;
-      }
-      this->set_digit_(pos, data, false);
-    }
-    pos++;
+    this->buffer_[i] = str[ct];
   }
-
   return 0;
 }
 
