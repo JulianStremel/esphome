@@ -37,8 +37,7 @@ class MAX7219Component : public PollingComponent,
   /// Print `str` at position 0.
   uint8_t print(const char *str);
   /// Print `std::string` at position 0.
-  uint8_t print(std::string str);
-  /// Evaluate the printf-format and print the result at the given position.
+
   uint8_t printf(uint8_t pos, const char *format, ...) __attribute__((format(printf, 3, 4)));
   /// Evaluate the printf-format and print the result at position 0.
   uint8_t printf(const char *format, ...) __attribute__((format(printf, 2, 3)));

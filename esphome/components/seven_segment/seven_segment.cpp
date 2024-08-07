@@ -230,7 +230,6 @@ void SEVENSEGMENTComponent::dump_config() {
 
 // update
 void SEVENSEGMENTComponent::update() {
-  ESP_LOGI(TAG, "Displaying...");
   for (uint8_t i = 0; i < this->num_digits_; i++) {
     this->set_digit_(i, this->buffer_[i], false);
   }
