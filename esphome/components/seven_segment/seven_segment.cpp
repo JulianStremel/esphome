@@ -184,6 +184,10 @@ void SEVENSEGMENTComponent::setup() {
   this->num_digits_ = ct;
   this->buffer_ = new uint8_t[this->num_digits_];
   this->buffer_size_ = sizeof(this->buffer_);
+  this->buffer_[0] = 0;
+  this->buffer_[1] = 72;
+  this->buffer_[2] = 73;
+  this->buffer_[3] = 0;
   this->setup_complete_ = true;
 }
 
