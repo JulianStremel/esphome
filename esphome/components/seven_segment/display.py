@@ -22,7 +22,7 @@ CONF_G1_PIN = "g1_pin"
 CONF_G2_PIN = "g2_pin"
 CONF_G3_PIN = "g3_pin"
 CONF_G4_PIN = "g4_pin"
-CONF_DIGITS = "digis"
+CONF_DIGITS = "digits"
 
 CONFIG_SCHEMA = display.BASIC_DISPLAY_SCHEMA.extend(
     {
