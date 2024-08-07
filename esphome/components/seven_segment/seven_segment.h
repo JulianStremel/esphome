@@ -44,6 +44,8 @@ class SEVENSEGMENTComponent : public PollingComponent {
   /// Print `std::string` at position 0.
   uint8_t print(std::string str);
 
+  void write_digit(uint8_t digit, uint8_t value, bool dp);
+
   /// Evaluate the printf-format and print the result at the given position.
   uint8_t printf(uint8_t pos, const char *format, ...) __attribute__((format(printf, 3, 4)));
   /// Evaluate the printf-format and print the result at position 0.

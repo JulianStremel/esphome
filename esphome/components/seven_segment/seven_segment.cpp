@@ -280,6 +280,16 @@ void SEVENSEGMENTComponent::set_digit_(uint8_t digit, uint8_t ch, bool dot) {
   delay(5);
 };
 
+void SEVENSEGMENTComponent::write_digit(uint8_t digit, uint8_t value, bool dp) {
+  ESP_LOGI(TAG, "Writing digit %u with value %u and dp %s", digit, value, dp ? "YES" : "NO");
+  if (digit >= this->num_digits_) {
+    ESP_LOGE(TAG, "Digit %u is out of range", digit);
+    return;
+  }
+  this->buffer_[digit] = value;
+  return;
+}
+
 // print functions
 uint8_t SEVENSEGMENTComponent::print(uint8_t start_pos, const char *str) {
   ESP_LOGI(TAG, "Printing(uint8_t start_pos, const char *str): %s", str);
