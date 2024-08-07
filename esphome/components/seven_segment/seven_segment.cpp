@@ -215,6 +215,7 @@ void SEVENSEGMENTComponent::dump_config() {
 }
 
 void SEVENSEGMENTComponent::display() {
+  ESP_LOGI(TAG, "Displaying...");
   for (uint8_t i = 0; i < this->num_digits_; i++) {
     this->set_digit_(i, this->buffer_[i], false);
   }
@@ -274,13 +275,17 @@ uint8_t SEVENSEGMENTComponent::print(uint8_t start_pos, const char *str) {
   }
   for (uint8_t i = 0; i < s.length(); i++) {
     this->buffer_[i] = s[i];
+    ESP_LOGI(TAG, "Buffer: %u", this->buffer_[i]);
   }
   return 0;
 }
 
 uint8_t SEVENSEGMENTComponent::print(const char *str) { return this->print(0, str); }
 
-uint8_t SEVENSEGMENTComponent::print(std::string str) { return this->print(0, str.c_str()); }
+uint8_t SEVENSEGMENTComponent::print(std::string str) {
+  ESP_LOGI(TAG, "Printing: %s", str.c_str());
+  return this->print(0, str.c_str());
+}
 
 uint8_t SEVENSEGMENTComponent::printf(uint8_t pos, const char *format, ...) {
   va_list arg;
