@@ -183,6 +183,7 @@ void SEVENSEGMENTComponent::setup() {
   }
   this->num_digits_ = ct;
   this->buffer_ = new uint8_t[this->num_digits_];
+  this->buffer_size_ = sizeof(this->buffer_);
   this->setup_complete_ = true;
 }
 
@@ -202,6 +203,7 @@ void SEVENSEGMENTComponent::dump_config() {
     ct++;
   }
   ESP_LOGCONFIG(TAG, "Number of Digits: %u", this->num_digits_);
+  ESP_LOGCONFIG(TAG, "Buffer Size: %u", this->buffer_size_);
   ESP_LOGCONFIG(TAG, "Writer: %s", this->writer_ ? "YES" : "NO");
   ESP_LOGCONFIG(TAG, "Setup Complete: %s", this->setup_complete_ ? "YES" : "NO");
   // ESP_LOGCONFIG(TAG, "  Number of Digits: %u", this->num_chips_);

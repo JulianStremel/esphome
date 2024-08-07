@@ -68,8 +68,8 @@ class SEVENSEGMENTComponent : public PollingComponent {
   GPIOPin *dp_pin_{nullptr};
   std::vector<GPIOPin *> digits_;
 
-  const static uint16_t BUFFER_SIZE = 256;
   uint8_t *buffer_;
+  uint16_t buffer_size_{0};
   bool setup_complete_{false};
   uint8_t num_digits_{0};
 
