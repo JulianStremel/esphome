@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import display
 import esphome.config_validation as cv
-from esphome.const import CONF_ID, CONF_LAMBDA, CONF_NUM_CHIPS
+from esphome.const import CONF_ID, CONF_LAMBDA
 from esphome.pins import gpio_output_pin_schema
 
 seven_segment_ns = cg.esphome_ns.namespace("seven_segment")
@@ -71,7 +71,19 @@ async def to_code(config):
     pin_dp = await cg.gpio_pin_expression(config[CONF_DP_PIN])
     cg.add(var.set_dp_pin(pin_dp))
 
-    cg.add(var.set_num_chips(config[CONF_NUM_CHIPS]))
+    pin_g1 = await cg.gpio_pin_expression(config[CONF_G1_PIN])
+    cg.add(var.set_g1_pin(pin_g1))
+
+    pin_g2 = await cg.gpio_pin_expression(config[CONF_G2_PIN])
+    cg.add(var.set_g2_pin(pin_g2))
+
+    pin_g3 = await cg.gpio_pin_expression(config[CONF_G3_PIN])
+    cg.add(var.set_g3_pin(pin_g3))
+
+    pin_g4 = await cg.gpio_pin_expression(config[CONF_G4_PIN])
+    cg.add(var.set_g4_pin(pin_g4))
+
+    # cg.add(var.set_num_chips(config[CONF_NUM_CHIPS]))
 
     if CONF_LAMBDA in config:
         lambda_ = await cg.process_lambda(
