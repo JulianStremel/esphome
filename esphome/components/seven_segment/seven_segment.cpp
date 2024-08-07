@@ -12,7 +12,39 @@ static const uint8_t SEVENSEG_UNKNOWN_CHAR = 0b00000000;
 
 bool setup_complete = false;
 
-const uint8_t SEVENSEG_ASCII_TO_RAW[95] PROGMEM = {
+const uint8_t SEVENSEG_ASCII_TO_RAW[128] PROGMEM = {
+    0b00000000,             // 0x00
+    0b00000000,             // 0x01
+    0b00000000,             // 0x02
+    0b00000000,             // 0x03
+    0b00000000,             // 0x04
+    0b00000000,             // 0x05
+    0b00000000,             // 0x06
+    0b00000000,             // 0x07
+    0b00000000,             // 0x08
+    0b00000000,             // 0x09
+    0b00000000,             // 0x0A
+    0b00000000,             // 0x0B
+    0b00000000,             // 0x0C
+    0b00000000,             // 0x0D
+    0b00000000,             // 0x0E
+    0b00000000,             // 0x0F
+    0b00000000,             // 0x10
+    0b00000000,             // 0x11
+    0b00000000,             // 0x12
+    0b00000000,             // 0x13
+    0b00000000,             // 0x14
+    0b00000000,             // 0x15
+    0b00000000,             // 0x16
+    0b00000000,             // 0x17
+    0b00000000,             // 0x18
+    0b00000000,             // 0x19
+    0b00000000,             // 0x1A
+    0b00000000,             // 0x1B
+    0b00000000,             // 0x1C
+    0b00000000,             // 0x1D
+    0b00000000,             // 0x1E
+    0b00000000,             // 0x1F
     0b00000000,             // ' ', ord 0x20
     0b10110000,             // '!', ord 0x21
     0b00100010,             // '"', ord 0x22
@@ -108,6 +140,7 @@ const uint8_t SEVENSEG_ASCII_TO_RAW[95] PROGMEM = {
     0b00000110,             // '|', ord 0x7C
     0b00000111,             // '}', ord 0x7D
     0b01100011,             // '~', ord 0x7E (degree symbol)
+    0b00000000,             // 0x7F
 };
 
 float SEVENSEGMENTComponent::get_setup_priority() const { return setup_priority::PROCESSOR; }
@@ -204,17 +237,11 @@ void SEVENSEGMENTComponent::set_digit_(uint8_t digit, uint8_t ch, bool dot) {
   uint8_t segments = 0;
   // concat to printable ASCII characters
   ESP_LOGI(TAG, "Setting digit %d to %d", digit, ch);
-  if (ch < 32) {
-    ESP_LOGI(TAG, "digit was too low %d", ch);
-    ch = 0;
-  } else {
-    ch = ch - 32;
-  }
-  if (ch < 95) {
+  if (ch < 128) {
     segments = SEVENSEG_ASCII_TO_RAW[ch];
   } else {
     ESP_LOGI(TAG, "digit was too high %d", ch);
-    segments = 0;
+    segments = 128;
   }
   segments = SEVENSEG_ASCII_TO_RAW[ch];
 
@@ -227,14 +254,14 @@ void SEVENSEGMENTComponent::set_digit_(uint8_t digit, uint8_t ch, bool dot) {
   this->g3_pin_->digital_write(digit == 2);
   this->g4_pin_->digital_write(digit == 3);
 
-  this->a_pin_->digital_write((segments & 0b10000000) || dot);
+  this->dp_pin_->digital_write((segments & 0b10000000) || dot);
   this->a_pin_->digital_write(segments & 0b01000000);
-  this->a_pin_->digital_write(segments & 0b00100000);
-  this->a_pin_->digital_write(segments & 0b00010000);
-  this->a_pin_->digital_write(segments & 0b00001000);
-  this->a_pin_->digital_write(segments & 0b00000100);
-  this->a_pin_->digital_write(segments & 0b00000010);
-  this->a_pin_->digital_write(segments & 0b00000001);
+  this->b_pin_->digital_write(segments & 0b00100000);
+  this->c_pin_->digital_write(segments & 0b00010000);
+  this->d_pin_->digital_write(segments & 0b00001000);
+  this->e_pin_->digital_write(segments & 0b00000100);
+  this->f_pin_->digital_write(segments & 0b00000010);
+  this->g_pin_->digital_write(segments & 0b00000001);
   delay(5);
 };
 
