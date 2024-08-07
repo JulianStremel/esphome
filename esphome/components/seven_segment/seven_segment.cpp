@@ -275,7 +275,7 @@ uint8_t SEVENSEGMENTComponent::print(uint8_t start_pos, const char *str) {
 }
 
 uint8_t SEVENSEGMENTComponent::print(const char *str) {
-  return this->print(0, str);
+  // return this->print(0, str);
   this->set_digit_(0, 0, false);
   this->set_digit_(1, 0x48, false);
   this->set_digit_(2, 0x49, false);
