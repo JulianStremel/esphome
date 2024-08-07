@@ -210,10 +210,9 @@ void SEVENSEGMENTComponent::dump_config() {
 }
 
 void SEVENSEGMENTComponent::display() {
-  this->set_digit_(0, 0, false);
-  this->set_digit_(1, 0x48, false);
-  this->set_digit_(2, 0x49, false);
-  this->set_digit_(3, 3, false);
+  for (uint8_t i = 0; i < this->num_digits_; i++) {
+    this->set_digit_(i, this->buffer_[i], false);
+  }
 }
 
 void SEVENSEGMENTComponent::update() { this->display(); }
@@ -259,29 +258,9 @@ void SEVENSEGMENTComponent::set_digit_(uint8_t digit, uint8_t ch, bool dot) {
   delay(5);
 };
 
-uint8_t SEVENSEGMENTComponent::print(uint8_t start_pos, const char *str) {
-  this->buffer_[256] = {0};
-  uint8_t len = strlen(str);
-  uint8_t pos = start_pos;
-  uint8_t ct = 0;
-  for (uint8_t i = start_pos; i < 256; i++) {
-    if (ct >= len) {
-      break;
-    }
-    this->buffer_[i] = str[ct];
-  }
-  this->display();
-  return 0;
-}
+uint8_t SEVENSEGMENTComponent::print(uint8_t start_pos, const char *str) { return 0; }
 
-uint8_t SEVENSEGMENTComponent::print(const char *str) {
-  // return this->print(0, str);
-  this->set_digit_(0, 0, false);
-  this->set_digit_(1, 0x48, false);
-  this->set_digit_(2, 0x49, false);
-  this->set_digit_(3, 3, false);
-  return 0;
-}
+uint8_t SEVENSEGMENTComponent::print(const char *str) { return this->print(0, str); }
 
 uint8_t SEVENSEGMENTComponent::printf(uint8_t pos, const char *format, ...) {
   va_list arg;
