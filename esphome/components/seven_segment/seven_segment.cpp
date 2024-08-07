@@ -178,35 +178,29 @@ void SEVENSEGMENTComponent::setup() {
   this->dp_pin_->setup();
   this->dp_pin_->digital_write(false);
 
-  this->g1_pin_->pin_mode(gpio::FLAG_OUTPUT);
-  this->g1_pin_->setup();
-  this->g1_pin_->digital_write(false);
-  this->g2_pin_->pin_mode(gpio::FLAG_OUTPUT);
-  this->g2_pin_->setup();
-  this->g2_pin_->digital_write(false);
-  this->g3_pin_->pin_mode(gpio::FLAG_OUTPUT);
-  this->g3_pin_->setup();
-  this->g3_pin_->digital_write(false);
-  this->g4_pin_->pin_mode(gpio::FLAG_OUTPUT);
-  this->g4_pin_->setup();
-  this->g4_pin_->digital_write(false);
+  for (GPIOPin *pin : this->digits_) {
+    pin->pin_mode(gpio::FLAG_OUTPUT);
+    pin->setup();
+    pin->digital_write(false);
+  }
   setup_complete = true;
 }
 
 void SEVENSEGMENTComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "SEVENSEG:");
-  ESP_LOGCONFIG(TAG, "A Pin: %u", this->a_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "B Pin: %u", this->b_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "C Pin: %u", this->c_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "D Pin: %u", this->d_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "E Pin: %u", this->e_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "F Pin: %u", this->f_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "G Pin: %u", this->g_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "DP Pin: %u", this->dp_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "G1 Pin: %u", this->g1_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "G2 Pin: %u", this->g2_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "G3 Pin: %u", this->g3_pin_->dump_summary());
-  ESP_LOGCONFIG(TAG, "G4 Pin: %u", this->g4_pin_->dump_summary());
+  ESP_LOGCONFIG(TAG, "A Pin: %s", this->a_pin_->dump_summary());
+  ESP_LOGCONFIG(TAG, "B Pin: %s", this->b_pin_->dump_summary());
+  ESP_LOGCONFIG(TAG, "C Pin: %s", this->c_pin_->dump_summary());
+  ESP_LOGCONFIG(TAG, "D Pin: %s", this->d_pin_->dump_summary());
+  ESP_LOGCONFIG(TAG, "E Pin: %s", this->e_pin_->dump_summary());
+  ESP_LOGCONFIG(TAG, "F Pin: %s", this->f_pin_->dump_summary());
+  ESP_LOGCONFIG(TAG, "G Pin: %s", this->g_pin_->dump_summary());
+  ESP_LOGCONFIG(TAG, "DP Pin: %s", this->dp_pin_->dump_summary());
+  uint8_t ct = 0;
+  for (GPIOPin *pin : this->digits_) {
+    ESP_LOGCONFIG(TAG, "Digit %n Pin: %s", ct, pin->dump_summary());
+    ct++;
+  }
   ESP_LOGCONFIG(TAG, "Writer: %s", this->writer_ ? "YES" : "NO");
   ESP_LOGCONFIG(TAG, "Setup Complete: %s", setup_complete ? "YES" : "NO");
   // ESP_LOGCONFIG(TAG, "  Number of Digits: %u", this->num_chips_);
@@ -245,10 +239,12 @@ void SEVENSEGMENTComponent::set_digit_(uint8_t digit, uint8_t ch, bool dot) {
 
   // write binary representation of the segments
   this->clear_display_();
-  this->g1_pin_->digital_write(digit == 0);
-  this->g2_pin_->digital_write(digit == 1);
-  this->g3_pin_->digital_write(digit == 2);
-  this->g4_pin_->digital_write(digit == 3);
+
+  uint8_t ct = 0;
+  for (GPIOPin *pin : this->digits_) {
+    pin->digital_write(ct == digit);
+    ct++;
+  }
 
   this->dp_pin_->digital_write((segments & 0b10000000) || dot);
   this->a_pin_->digital_write(segments & 0b01000000);
@@ -261,9 +257,35 @@ void SEVENSEGMENTComponent::set_digit_(uint8_t digit, uint8_t ch, bool dot) {
   delay(5);
 };
 
-uint8_t SEVENSEGMENTComponent::print(uint8_t start_pos, const char *str) { return 0; }
+uint8_t SEVENSEGMENTComponent::print(uint8_t start_pos, const char *str) {
+  uint8_t pos = start_pos;
+  for (; *str != '\0'; str++) {
+    uint8_t data = SEVENSEG_UNKNOWN_CHAR;
+    if (*str >= ' ' && *str <= '~')
+      data = progmem_read_byte(&SEVENSEG_ASCII_TO_RAW[*str - ' ']);
+
+    if (data == SEVENSEG_UNKNOWN_CHAR) {
+      ESP_LOGW(TAG, "Encountered character '%c' with no SEVENSEG representation while translating string!", *str);
+    }
+    if (*str == '.') {
+      if (pos != start_pos)
+        pos--;
+      this->set_digit_(pos, 0, true);
+    } else {
+      if (pos >= 4) {
+        ESP_LOGW(TAG, "Encountered character '%c' with no SEVENSEG representation while translating string!", *str);
+        continue;
+      }
+      this->set_digit_(pos, data, false);
+    }
+    pos++;
+  }
+
+  return 0;
+}
 
 uint8_t SEVENSEGMENTComponent::print(const char *str) { return this->print(0, str); }
+
 uint8_t SEVENSEGMENTComponent::printf(uint8_t pos, const char *format, ...) {
   va_list arg;
   va_start(arg, format);
@@ -274,6 +296,7 @@ uint8_t SEVENSEGMENTComponent::printf(uint8_t pos, const char *format, ...) {
     return this->print(pos, buffer);
   return 0;
 }
+
 uint8_t SEVENSEGMENTComponent::printf(const char *format, ...) {
   va_list arg;
   va_start(arg, format);
@@ -297,10 +320,7 @@ void SEVENSEGMENTComponent::set_e_pin(GPIOPin *e_pin) { this->e_pin_ = e_pin; }
 void SEVENSEGMENTComponent::set_f_pin(GPIOPin *f_pin) { this->f_pin_ = f_pin; }
 void SEVENSEGMENTComponent::set_g_pin(GPIOPin *g_pin) { this->g_pin_ = g_pin; }
 void SEVENSEGMENTComponent::set_dp_pin(GPIOPin *dp_pin) { this->dp_pin_ = dp_pin; }
-void SEVENSEGMENTComponent::set_g1_pin(GPIOPin *g1_pin) { this->g1_pin_ = g1_pin; }
-void SEVENSEGMENTComponent::set_g2_pin(GPIOPin *g2_pin) { this->g2_pin_ = g2_pin; }
-void SEVENSEGMENTComponent::set_g3_pin(GPIOPin *g3_pin) { this->g3_pin_ = g3_pin; }
-void SEVENSEGMENTComponent::set_g4_pin(GPIOPin *g4_pin) { this->g4_pin_ = g4_pin; }
+void SEVENSEGMENTComponent::set_digits(const std::vector<GPIOPin *> &digits) { this->digits_ = digits; }
 
 uint8_t SEVENSEGMENTComponent::strftime(uint8_t pos, const char *format, ESPTime time) {
   char buffer[64];

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include "esphome/core/component.h"
 #include "esphome/core/time.h"
 #include "esphome/core/gpio.h"
@@ -34,10 +35,7 @@ class SEVENSEGMENTComponent : public PollingComponent {
   void set_f_pin(GPIOPin *f_pin);
   void set_g_pin(GPIOPin *g_pin);
   void set_dp_pin(GPIOPin *dp_pin);
-  void set_g1_pin(GPIOPin *g1_pin);
-  void set_g2_pin(GPIOPin *g2_pin);
-  void set_g3_pin(GPIOPin *g3_pin);
-  void set_g4_pin(GPIOPin *g4_pin);
+  void set_digits(const std::vector<GPIOPin *> &digits);
 
   /// Evaluate the printf-format and print the result at the given position.
   uint8_t printf(uint8_t pos, const char *format, ...) __attribute__((format(printf, 3, 4)));
@@ -68,10 +66,7 @@ class SEVENSEGMENTComponent : public PollingComponent {
   GPIOPin *f_pin_{nullptr};
   GPIOPin *g_pin_{nullptr};
   GPIOPin *dp_pin_{nullptr};
-  GPIOPin *g1_pin_{nullptr};
-  GPIOPin *g2_pin_{nullptr};
-  GPIOPin *g3_pin_{nullptr};
-  GPIOPin *g4_pin_{nullptr};
+  std::vector<GPIOPin *> digits_;
 
   // uint8_t num_chips_{1};
   optional<seven_segment_writer_t> writer_{};
