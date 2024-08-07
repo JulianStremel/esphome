@@ -2,7 +2,6 @@
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
 #include "esphome/core/hal.h"
-#include "src/esphome/components/gpio/output/gpio_binary_output.h"
 
 namespace esphome {
 namespace seven_segment {
@@ -118,22 +117,19 @@ void SEVENSEGMENTComponent::setup() {
     ESP_LOGE(TAG, "Not all pins are defined.");
     return;
   }
-  this->a_pin_->setup();
-  this->b_pin_->setup();
-  this->c_pin_->setup();
-  this->d_pin_->setup();
-  this->e_pin_->setup();
-  this->f_pin_->setup();
-  this->g_pin_->setup();
-  this->dp_pin_->setup();
-  this->a_pin_->set_state(0);
-  this->b_pin_->set_state(0);
-  this->c_pin_->set_state(0);
-  this->d_pin_->set_state(0);
-  this->e_pin_->set_state(0);
-  this->f_pin_->set_state(0);
-  this->g_pin_->set_state(0);
-  this->dp_pin_->set_state(0);
+  this->a_pin_->set_state(false);
+  this->b_pin_->set_state(false);
+  this->c_pin_->set_state(false);
+  this->d_pin_->set_state(false);
+  this->e_pin_->set_state(false);
+  this->f_pin_->set_state(false);
+  this->g_pin_->set_state(false);
+  this->dp_pin_->set_state(false);
+  this->g1_pin_->set_state(false);
+  this->g2_pin_->set_state(false);
+  this->g3_pin_->set_state(false);
+  this->g4_pin_->set_state(false);
+
   // log all pin numbers and states
   ESP_LOGCONFIG(TAG, "A Pin: %u", this->a_pin_->get_component_state());
   ESP_LOGCONFIG(TAG, "B Pin: %u", this->b_pin_->get_component_state());
@@ -143,11 +139,15 @@ void SEVENSEGMENTComponent::setup() {
   ESP_LOGCONFIG(TAG, "F Pin: %u", this->f_pin_->get_component_state());
   ESP_LOGCONFIG(TAG, "G Pin: %u", this->g_pin_->get_component_state());
   ESP_LOGCONFIG(TAG, "DP Pin: %u", this->dp_pin_->get_component_state());
+  ESP_LOGCONFIG(TAG, "G1 Pin: %u", this->g1_pin_->get_component_state());
+  ESP_LOGCONFIG(TAG, "G2 Pin: %u", this->g2_pin_->get_component_state());
+  ESP_LOGCONFIG(TAG, "G3 Pin: %u", this->g3_pin_->get_component_state());
+  ESP_LOGCONFIG(TAG, "G4 Pin: %u", this->g4_pin_->get_component_state());
 }
 
 void SEVENSEGMENTComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "SEVENSEG:");
-  ESP_LOGCONFIG(TAG, "  Number of Digits: %u", this->num_chips_);
+  // ESP_LOGCONFIG(TAG, "  Number of Digits: %u", this->num_chips_);
   LOG_UPDATE_INTERVAL(this);
 }
 
@@ -159,9 +159,41 @@ void SEVENSEGMENTComponent::display() {
 
 void SEVENSEGMENTComponent::update() { this->display(); }
 
+void SEVENSEGMENTComponent::clear_display_() {
+  this->a_pin_->set_state(false);
+  this->b_pin_->set_state(false);
+  this->c_pin_->set_state(false);
+  this->d_pin_->set_state(false);
+  this->e_pin_->set_state(false);
+  this->f_pin_->set_state(false);
+  this->g_pin_->set_state(false);
+  this->dp_pin_->set_state(false);
+}
+
+void SEVENSEGMENTComponent::set_digit_(uint8_t digit, uint8_t ch, bool dot) {
+  this->clear_display_();
+  this->g1_pin_->set_state(digit == 0);
+  this->g2_pin_->set_state(digit == 1);
+  this->g3_pin_->set_state(digit == 2);
+  this->g4_pin_->set_state(digit == 3);
+
+  uint8_t segments = SEVENSEG_ASCII_TO_RAW[ch];
+  this->a_pin_->set_state((segments & 0b10000000) || dot);
+  this->a_pin_->set_state(segments & 0b01000000);
+  this->a_pin_->set_state(segments & 0b00100000);
+  this->a_pin_->set_state(segments & 0b00010000);
+  this->a_pin_->set_state(segments & 0b00001000);
+  this->a_pin_->set_state(segments & 0b00000100);
+  this->a_pin_->set_state(segments & 0b00000010);
+  this->a_pin_->set_state(segments & 0b00000001);
+  delay(5);
+};
+
 uint8_t SEVENSEGMENTComponent::print(uint8_t start_pos, const char *str) {
   // print implementation
+  return 0;
 }
+
 uint8_t SEVENSEGMENTComponent::print(const char *str) { return this->print(0, str); }
 uint8_t SEVENSEGMENTComponent::printf(uint8_t pos, const char *format, ...) {
   va_list arg;
@@ -185,7 +217,7 @@ uint8_t SEVENSEGMENTComponent::printf(const char *format, ...) {
 }
 void SEVENSEGMENTComponent::set_writer(seven_segment_writer_t &&writer) { this->writer_ = writer; }
 
-void SEVENSEGMENTComponent::set_num_chips(uint8_t num_chips) { this->num_chips_ = num_chips; }
+// void SEVENSEGMENTComponent::set_num_chips(uint8_t num_chips) { this->num_chips_ = num_chips; }
 
 void SEVENSEGMENTComponent::set_a_pin(gpio::GPIOBinaryOutput *a_pin) { this->a_pin_ = a_pin; }
 void SEVENSEGMENTComponent::set_b_pin(gpio::GPIOBinaryOutput *b_pin) { this->b_pin_ = b_pin; }
@@ -195,6 +227,10 @@ void SEVENSEGMENTComponent::set_e_pin(gpio::GPIOBinaryOutput *e_pin) { this->e_p
 void SEVENSEGMENTComponent::set_f_pin(gpio::GPIOBinaryOutput *f_pin) { this->f_pin_ = f_pin; }
 void SEVENSEGMENTComponent::set_g_pin(gpio::GPIOBinaryOutput *g_pin) { this->g_pin_ = g_pin; }
 void SEVENSEGMENTComponent::set_dp_pin(gpio::GPIOBinaryOutput *dp_pin) { this->dp_pin_ = dp_pin; }
+void SEVENSEGMENTComponent::set_g1_pin(gpio::GPIOBinaryOutput *g1_pin) { this->g1_pin_ = g1_pin; }
+void SEVENSEGMENTComponent::set_g2_pin(gpio::GPIOBinaryOutput *g2_pin) { this->g2_pin_ = g2_pin; }
+void SEVENSEGMENTComponent::set_g3_pin(gpio::GPIOBinaryOutput *g3_pin) { this->g3_pin_ = g3_pin; }
+void SEVENSEGMENTComponent::set_g4_pin(gpio::GPIOBinaryOutput *g4_pin) { this->g4_pin_ = g4_pin; }
 
 uint8_t SEVENSEGMENTComponent::strftime(uint8_t pos, const char *format, ESPTime time) {
   char buffer[64];

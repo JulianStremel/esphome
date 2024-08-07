@@ -18,6 +18,10 @@ CONF_E_PIN = "e_pin"
 CONF_F_PIN = "f_pin"
 CONF_G_PIN = "g_pin"
 CONF_DP_PIN = "dp_pin"
+CONF_G1_PIN = "g1_pin"
+CONF_G2_PIN = "g2_pin"
+CONF_G3_PIN = "g3_pin"
+CONF_G4_PIN = "g4_pin"
 
 CONFIG_SCHEMA = display.BASIC_DISPLAY_SCHEMA.extend(
     {
@@ -30,7 +34,10 @@ CONFIG_SCHEMA = display.BASIC_DISPLAY_SCHEMA.extend(
         cv.Required(CONF_F_PIN): cv.ensure_schema(gpio_output_pin_schema),
         cv.Required(CONF_G_PIN): cv.ensure_schema(gpio_output_pin_schema),
         cv.Required(CONF_DP_PIN): cv.ensure_schema(gpio_output_pin_schema),
-        cv.Optional(CONF_NUM_CHIPS, default=1): cv.int_range(min=1, max=255),
+        cv.Required(CONF_G1_PIN): cv.ensure_schema(gpio_output_pin_schema),
+        cv.Required(CONF_G2_PIN): cv.ensure_schema(gpio_output_pin_schema),
+        cv.Required(CONF_G3_PIN): cv.ensure_schema(gpio_output_pin_schema),
+        cv.Required(CONF_G4_PIN): cv.ensure_schema(gpio_output_pin_schema),
     }
 ).extend(cv.polling_component_schema("25ms"))
 

@@ -2,6 +2,7 @@
 
 #include "esphome/core/component.h"
 #include "esphome/core/time.h"
+#include "esphome/components/gpio/output/gpio_binary_output.h"
 
 namespace esphome {
 namespace seven_segment {
@@ -24,7 +25,7 @@ class SEVENSEGMENTComponent : public PollingComponent {
 
   void display();
 
-  void set_num_chips(uint8_t num_chips);
+  // void set_num_chips(uint8_t num_chips);
   void set_a_pin(gpio::GPIOBinaryOutput *a_pin);
   void set_b_pin(gpio::GPIOBinaryOutput *b_pin);
   void set_c_pin(gpio::GPIOBinaryOutput *c_pin);
@@ -33,6 +34,10 @@ class SEVENSEGMENTComponent : public PollingComponent {
   void set_f_pin(gpio::GPIOBinaryOutput *f_pin);
   void set_g_pin(gpio::GPIOBinaryOutput *g_pin);
   void set_dp_pin(gpio::GPIOBinaryOutput *dp_pin);
+  void set_g1_pin(gpio::GPIOBinaryOutput *g1_pin);
+  void set_g2_pin(gpio::GPIOBinaryOutput *g2_pin);
+  void set_g3_pin(gpio::GPIOBinaryOutput *g3_pin);
+  void set_g4_pin(gpio::GPIOBinaryOutput *g4_pin);
 
   /// Evaluate the printf-format and print the result at the given position.
   uint8_t printf(uint8_t pos, const char *format, ...) __attribute__((format(printf, 3, 4)));
@@ -51,8 +56,9 @@ class SEVENSEGMENTComponent : public PollingComponent {
   uint8_t strftime(const char *format, ESPTime time) __attribute__((format(strftime, 2, 0)));
 
  protected:
-  void send_byte_(uint8_t a_register, uint8_t data);
-  void send_to_all_(uint8_t a_register, uint8_t data);
+  void clear_display_();
+
+  void set_digit_(uint8_t digit, uint8_t value, bool dp);
 
   gpio::GPIOBinaryOutput *a_pin_{nullptr};
   gpio::GPIOBinaryOutput *b_pin_{nullptr};
@@ -62,8 +68,12 @@ class SEVENSEGMENTComponent : public PollingComponent {
   gpio::GPIOBinaryOutput *f_pin_{nullptr};
   gpio::GPIOBinaryOutput *g_pin_{nullptr};
   gpio::GPIOBinaryOutput *dp_pin_{nullptr};
+  gpio::GPIOBinaryOutput *g1_pin_{nullptr};
+  gpio::GPIOBinaryOutput *g2_pin_{nullptr};
+  gpio::GPIOBinaryOutput *g3_pin_{nullptr};
+  gpio::GPIOBinaryOutput *g4_pin_{nullptr};
 
-  uint8_t num_chips_{1};
+  // uint8_t num_chips_{1};
   optional<seven_segment_writer_t> writer_{};
 };
 
