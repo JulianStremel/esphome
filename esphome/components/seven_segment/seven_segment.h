@@ -37,17 +37,17 @@ class SEVENSEGMENTComponent : public PollingComponent {
   void set_dp_pin(GPIOPin *dp_pin);
   void set_digits(const std::vector<GPIOPin *> &digits);
 
-  /// Evaluate the printf-format and print the result at the given position.
-  uint8_t printf(uint8_t pos, const char *format, ...) __attribute__((format(printf, 3, 4)));
-  /// Evaluate the printf-format and print the result at position 0.
-  uint8_t printf(const char *format, ...) __attribute__((format(printf, 2, 3)));
-
   /// Print `str` at the given position.
   uint8_t print(uint8_t pos, const char *str);
   /// Print `str` at position 0.
   uint8_t print(const char *str);
-
+  /// Print `std::string` at position 0.
   uint8_t print(std::string str);
+
+  /// Evaluate the printf-format and print the result at the given position.
+  uint8_t printf(uint8_t pos, const char *format, ...) __attribute__((format(printf, 3, 4)));
+  /// Evaluate the printf-format and print the result at position 0.
+  uint8_t printf(const char *format, ...) __attribute__((format(printf, 2, 3)));
 
   /// Evaluate the strftime-format and print the result at the given position.
   uint8_t strftime(uint8_t pos, const char *format, ESPTime time) __attribute__((format(strftime, 3, 0)));
@@ -57,7 +57,6 @@ class SEVENSEGMENTComponent : public PollingComponent {
 
  protected:
   void clear_display_();
-
   void set_digit_(uint8_t digit, uint8_t value, bool dp);
 
   GPIOPin *a_pin_{nullptr};

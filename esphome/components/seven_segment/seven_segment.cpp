@@ -141,7 +141,20 @@ const uint8_t SEVENSEG_ASCII_TO_RAW[128] PROGMEM = {
     0b00000000,             // 0x7F
 };
 
+// getter and setter
 float SEVENSEGMENTComponent::get_setup_priority() const { return setup_priority::PROCESSOR; }
+void SEVENSEGMENTComponent::set_writer(seven_segment_writer_t &&writer) { this->writer_ = writer; }
+void SEVENSEGMENTComponent::set_a_pin(GPIOPin *a_pin) { this->a_pin_ = a_pin; }
+void SEVENSEGMENTComponent::set_b_pin(GPIOPin *b_pin) { this->b_pin_ = b_pin; }
+void SEVENSEGMENTComponent::set_c_pin(GPIOPin *c_pin) { this->c_pin_ = c_pin; }
+void SEVENSEGMENTComponent::set_d_pin(GPIOPin *d_pin) { this->d_pin_ = d_pin; }
+void SEVENSEGMENTComponent::set_e_pin(GPIOPin *e_pin) { this->e_pin_ = e_pin; }
+void SEVENSEGMENTComponent::set_f_pin(GPIOPin *f_pin) { this->f_pin_ = f_pin; }
+void SEVENSEGMENTComponent::set_g_pin(GPIOPin *g_pin) { this->g_pin_ = g_pin; }
+void SEVENSEGMENTComponent::set_dp_pin(GPIOPin *dp_pin) { this->dp_pin_ = dp_pin; }
+void SEVENSEGMENTComponent::set_digits(const std::vector<GPIOPin *> &digits) { this->digits_ = digits; }
+
+// setup
 void SEVENSEGMENTComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up 7 Segment...");
   // ckeck all pins are defined
@@ -191,6 +204,7 @@ void SEVENSEGMENTComponent::setup() {
   this->setup_complete_ = true;
 }
 
+// dump config
 void SEVENSEGMENTComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "SEVENSEG:");
   ESP_LOGCONFIG(TAG, "A Pin: %s", this->a_pin_->dump_summary().c_str());
@@ -214,15 +228,17 @@ void SEVENSEGMENTComponent::dump_config() {
   LOG_UPDATE_INTERVAL(this);
 }
 
-void SEVENSEGMENTComponent::display() {
+// update
+void SEVENSEGMENTComponent::update() {
   ESP_LOGI(TAG, "Displaying...");
   for (uint8_t i = 0; i < this->num_digits_; i++) {
     this->set_digit_(i, this->buffer_[i], false);
   }
 }
 
-void SEVENSEGMENTComponent::update() { this->display(); }
+// void SEVENSEGMENTComponent::update() { this->display(); }
 
+// blank display
 void SEVENSEGMENTComponent::clear_display_() {
   this->a_pin_->digital_write(false);
   this->b_pin_->digital_write(false);
@@ -234,6 +250,7 @@ void SEVENSEGMENTComponent::clear_display_() {
   this->dp_pin_->digital_write(false);
 }
 
+// write digit to segment
 void SEVENSEGMENTComponent::set_digit_(uint8_t digit, uint8_t ch, bool dot) {
   uint8_t segments = 0;
   // concat to printable ASCII characters
@@ -264,7 +281,9 @@ void SEVENSEGMENTComponent::set_digit_(uint8_t digit, uint8_t ch, bool dot) {
   delay(5);
 };
 
+// print functions
 uint8_t SEVENSEGMENTComponent::print(uint8_t start_pos, const char *str) {
+  ESP_LOGI(TAG, "Printing(uint8_t start_pos, const char *str): %s", str);
   std::string s = str;
   if (s.length() > buffer_size_) {
     ESP_LOGE(TAG, "String is too long for buffer");
@@ -275,15 +294,17 @@ uint8_t SEVENSEGMENTComponent::print(uint8_t start_pos, const char *str) {
   }
   for (uint8_t i = 0; i < s.length(); i++) {
     this->buffer_[i] = s[i];
-    ESP_LOGI(TAG, "Buffer: %u", this->buffer_[i]);
   }
   return 0;
 }
 
-uint8_t SEVENSEGMENTComponent::print(const char *str) { return this->print(0, str); }
+uint8_t SEVENSEGMENTComponent::print(const char *str) {
+  ESP_LOGI(TAG, "Printing(const char *str): %s", str);
+  return this->print(0, str);
+}
 
 uint8_t SEVENSEGMENTComponent::print(std::string str) {
-  ESP_LOGI(TAG, "Printing: %s", str.c_str());
+  ESP_LOGI(TAG, "Printing(std::string str): %s", str.c_str());
   return this->print(0, str.c_str());
 }
 
@@ -309,18 +330,6 @@ uint8_t SEVENSEGMENTComponent::printf(const char *format, ...) {
   return 0;
 }
 
-void SEVENSEGMENTComponent::set_writer(seven_segment_writer_t &&writer) { this->writer_ = writer; }
-
-void SEVENSEGMENTComponent::set_a_pin(GPIOPin *a_pin) { this->a_pin_ = a_pin; }
-void SEVENSEGMENTComponent::set_b_pin(GPIOPin *b_pin) { this->b_pin_ = b_pin; }
-void SEVENSEGMENTComponent::set_c_pin(GPIOPin *c_pin) { this->c_pin_ = c_pin; }
-void SEVENSEGMENTComponent::set_d_pin(GPIOPin *d_pin) { this->d_pin_ = d_pin; }
-void SEVENSEGMENTComponent::set_e_pin(GPIOPin *e_pin) { this->e_pin_ = e_pin; }
-void SEVENSEGMENTComponent::set_f_pin(GPIOPin *f_pin) { this->f_pin_ = f_pin; }
-void SEVENSEGMENTComponent::set_g_pin(GPIOPin *g_pin) { this->g_pin_ = g_pin; }
-void SEVENSEGMENTComponent::set_dp_pin(GPIOPin *dp_pin) { this->dp_pin_ = dp_pin; }
-void SEVENSEGMENTComponent::set_digits(const std::vector<GPIOPin *> &digits) { this->digits_ = digits; }
-
 uint8_t SEVENSEGMENTComponent::strftime(uint8_t pos, const char *format, ESPTime time) {
   char buffer[64];
   size_t ret = time.strftime(buffer, sizeof(buffer), format);
@@ -328,6 +337,7 @@ uint8_t SEVENSEGMENTComponent::strftime(uint8_t pos, const char *format, ESPTime
     return this->print(pos, buffer);
   return 0;
 }
+
 uint8_t SEVENSEGMENTComponent::strftime(const char *format, ESPTime time) { return this->strftime(0, format, time); }
 
 }  // namespace seven_segment
