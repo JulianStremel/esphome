@@ -2,6 +2,7 @@
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
 #include "esphome/core/hal.h"
+#include "esphome/components/gpio/output/gpio_binary_output.h"
 
 namespace esphome {
 namespace seven_segment {
