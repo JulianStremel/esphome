@@ -22,7 +22,7 @@ CONF_G1_PIN = "g1_pin"
 CONF_G2_PIN = "g2_pin"
 CONF_G3_PIN = "g3_pin"
 CONF_G4_PIN = "g4_pin"
-CONF_DIGIS = "digis"
+CONF_DIGITS = "digis"
 
 CONFIG_SCHEMA = display.BASIC_DISPLAY_SCHEMA.extend(
     {
@@ -35,11 +35,7 @@ CONFIG_SCHEMA = display.BASIC_DISPLAY_SCHEMA.extend(
         cv.Required(CONF_F_PIN): cv.ensure_schema(gpio_output_pin_schema),
         cv.Required(CONF_G_PIN): cv.ensure_schema(gpio_output_pin_schema),
         cv.Required(CONF_DP_PIN): cv.ensure_schema(gpio_output_pin_schema),
-        cv.Required(CONF_DIGIS): cv.ensure_list(gpio_output_pin_schema),
-        cv.Required(CONF_G1_PIN): cv.ensure_schema(gpio_output_pin_schema),
-        cv.Required(CONF_G2_PIN): cv.ensure_schema(gpio_output_pin_schema),
-        cv.Required(CONF_G3_PIN): cv.ensure_schema(gpio_output_pin_schema),
-        cv.Required(CONF_G4_PIN): cv.ensure_schema(gpio_output_pin_schema),
+        cv.Required(CONF_DIGITS): cv.ensure_list(gpio_output_pin_schema),
     }
 ).extend(cv.polling_component_schema("25ms"))
 
@@ -73,20 +69,8 @@ async def to_code(config):
     pin_dp = await cg.gpio_pin_expression(config[CONF_DP_PIN])
     cg.add(var.set_dp_pin(pin_dp))
 
-    pin_g1 = await cg.gpio_pin_expression(config[CONF_G1_PIN])
-    cg.add(var.set_g1_pin(pin_g1))
-
-    pin_g2 = await cg.gpio_pin_expression(config[CONF_G2_PIN])
-    cg.add(var.set_g2_pin(pin_g2))
-
-    pin_g3 = await cg.gpio_pin_expression(config[CONF_G3_PIN])
-    cg.add(var.set_g3_pin(pin_g3))
-
-    pin_g4 = await cg.gpio_pin_expression(config[CONF_G4_PIN])
-    cg.add(var.set_g4_pin(pin_g4))
-
     digits = []
-    for pin in config[CONF_DIGIS]:
+    for pin in config[CONF_DIGITS]:
         pin_digit = await cg.gpio_pin_expression(pin)
         digits.append(pin_digit)
     cg.add(var.set_digits(digits))
