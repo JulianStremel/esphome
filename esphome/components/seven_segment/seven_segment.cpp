@@ -198,7 +198,7 @@ void SEVENSEGMENTComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "DP Pin: %s", this->dp_pin_->dump_summary().c_str());
   uint8_t ct = 0;
   for (GPIOPin *pin : this->digits_) {
-    ESP_LOGCONFIG(TAG, "Digit %n Pin: %s", ct, pin->dump_summary().c_str());
+    ESP_LOGCONFIG(TAG, "Digit %d Pin: %s", ct, pin->dump_summary().c_str());
     ct++;
   }
   ESP_LOGCONFIG(TAG, "Writer: %s", this->writer_ ? "YES" : "NO");
