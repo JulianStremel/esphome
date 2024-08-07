@@ -258,7 +258,16 @@ void SEVENSEGMENTComponent::set_digit_(uint8_t digit, uint8_t ch, bool dot) {
   delay(5);
 };
 
-uint8_t SEVENSEGMENTComponent::print(uint8_t start_pos, const char *str) { return 0; }
+uint8_t SEVENSEGMENTComponent::print(uint8_t start_pos, const char *str) {
+  if (strlen(str) > sizeof(this->buffer_)) {
+    ESP_LOGE(TAG, "String is too long for buffer");
+    return 0;
+  }
+  for (uint8_t i = 0; i < strlen(str); i++) {
+    this->buffer_[i] = str[i];
+  }
+  return 0;
+}
 
 uint8_t SEVENSEGMENTComponent::print(const char *str) { return this->print(0, str); }
 
