@@ -280,6 +280,8 @@ uint8_t SEVENSEGMENTComponent::print(uint8_t start_pos, const char *str) {
 
 uint8_t SEVENSEGMENTComponent::print(const char *str) { return this->print(0, str); }
 
+uint8_t SEVENSEGMENTComponent::print(std::string str) { return this->print(0, str.c_str()); }
+
 uint8_t SEVENSEGMENTComponent::printf(uint8_t pos, const char *format, ...) {
   va_list arg;
   va_start(arg, format);

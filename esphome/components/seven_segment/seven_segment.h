@@ -47,6 +47,8 @@ class SEVENSEGMENTComponent : public PollingComponent {
   /// Print `str` at position 0.
   uint8_t print(const char *str);
 
+  uint8_t print(std::string str);
+
   /// Evaluate the strftime-format and print the result at the given position.
   uint8_t strftime(uint8_t pos, const char *format, ESPTime time) __attribute__((format(strftime, 3, 0)));
 
