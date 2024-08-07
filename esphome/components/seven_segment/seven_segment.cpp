@@ -236,18 +236,14 @@ void SEVENSEGMENTComponent::clear_display_() {
 void SEVENSEGMENTComponent::set_digit_(uint8_t digit, uint8_t ch, bool dot) {
   uint8_t segments = 0;
   // concat to printable ASCII characters
-  ESP_LOGI(TAG, "Setting digit %d to %d", digit, ch);
   if (ch < 128) {
     segments = SEVENSEG_ASCII_TO_RAW[ch];
   } else {
-    ESP_LOGI(TAG, "digit was too high %d", ch);
     segments = 128;
   }
   segments = SEVENSEG_ASCII_TO_RAW[ch];
 
   // write binary representation of the segments
-  ESP_LOGI(TAG, "Segments to %d", segments);
-
   this->clear_display_();
   this->g1_pin_->digital_write(digit == 0);
   this->g2_pin_->digital_write(digit == 1);
