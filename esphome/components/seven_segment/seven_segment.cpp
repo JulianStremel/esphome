@@ -110,7 +110,7 @@ const uint8_t SEVENSEG_ASCII_TO_RAW[95] PROGMEM = {
 
 float SEVENSEGMENTComponent::get_setup_priority() const { return setup_priority::PROCESSOR; }
 void SEVENSEGMENTComponent::setup() {
-  ESP_LOGCONFIG(TAG, "Setting up 7 Segment...");
+  ESP_LOGI(TAG, "Setting up 7 Segment...");
   // ckeck all pins are defined
   if (!this->a_pin_ || !this->b_pin_ || !this->c_pin_ || !this->d_pin_ || !this->e_pin_ || !this->f_pin_ ||
       !this->g_pin_ || !this->dp_pin_) {
