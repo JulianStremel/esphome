@@ -311,8 +311,6 @@ uint8_t SEVENSEGMENTComponent::printf(const char *format, ...) {
 
 void SEVENSEGMENTComponent::set_writer(seven_segment_writer_t &&writer) { this->writer_ = writer; }
 
-// void SEVENSEGMENTComponent::set_num_chips(uint8_t num_chips) { this->num_chips_ = num_chips; }
-
 void SEVENSEGMENTComponent::set_a_pin(GPIOPin *a_pin) { this->a_pin_ = a_pin; }
 void SEVENSEGMENTComponent::set_b_pin(GPIOPin *b_pin) { this->b_pin_ = b_pin; }
 void SEVENSEGMENTComponent::set_c_pin(GPIOPin *c_pin) { this->c_pin_ = c_pin; }

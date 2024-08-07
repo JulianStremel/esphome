@@ -75,7 +75,6 @@ class SEVENSEGMENTComponent : public PollingComponent {
   bool setup_complete_{false};
   uint8_t num_digits_{0};
 
-  // uint8_t num_chips_{1};
   optional<seven_segment_writer_t> writer_{};
 };
 

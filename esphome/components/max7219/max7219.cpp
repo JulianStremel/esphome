@@ -153,6 +153,7 @@ void MAX7219Component::display() {
     this->disable();
   }
 }
+
 void MAX7219Component::send_byte_(uint8_t a_register, uint8_t data) {
   this->write_byte(a_register);
   this->write_byte(data);
