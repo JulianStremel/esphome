@@ -210,10 +210,10 @@ void SEVENSEGMENTComponent::dump_config() {
 }
 
 void SEVENSEGMENTComponent::display() {
-  uint8_t ct = 0;
-  for (GPIOPin *pin : this->digits_) {
-    this->set_digit_(ct, this->buffer_[ct], false);
-  }
+  this->set_digit_(0, 0, false);
+  this->set_digit_(1, 0x48, false);
+  this->set_digit_(2, 0x49, false);
+  this->set_digit_(3, 3, false);
 }
 
 void SEVENSEGMENTComponent::update() { this->display(); }
@@ -280,6 +280,7 @@ uint8_t SEVENSEGMENTComponent::print(const char *str) {
   this->set_digit_(1, 0x48, false);
   this->set_digit_(2, 0x49, false);
   this->set_digit_(3, 3, false);
+  return 0;
 }
 
 uint8_t SEVENSEGMENTComponent::printf(uint8_t pos, const char *format, ...) {
