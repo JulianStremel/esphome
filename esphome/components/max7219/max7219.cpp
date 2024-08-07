@@ -176,6 +176,7 @@ void MAX7219Component::update() {
   this->display();
 }
 uint8_t MAX7219Component::print(uint8_t start_pos, const char *str) {
+  ESP_LOGI(TAG, "Printing string '%s' at position %u", str, start_pos);
   uint8_t pos = start_pos;
   for (; *str != '\0'; str++) {
     uint8_t data = MAX7219_UNKNOWN_CHAR;
