@@ -270,6 +270,7 @@ uint8_t SEVENSEGMENTComponent::print(uint8_t start_pos, const char *str) {
     }
     this->buffer_[i] = str[ct];
   }
+  this->display();
   return 0;
 }
 
