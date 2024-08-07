@@ -2,7 +2,7 @@
 
 #include "esphome/core/component.h"
 #include "esphome/core/time.h"
-#include "src/esphome/components/gpio/output/gpio_binary_output.h"
+#include "esphome/components/gpio/output/gpio_binary_output.h"
 
 namespace esphome {
 namespace seven_segment {
