@@ -215,8 +215,8 @@ void SEVENSEGMENTComponent::dump_config() {
 
 void SEVENSEGMENTComponent::display() {
   this->set_digit_(0, 0, false);
-  this->set_digit_(1, 55, false);
-  this->set_digit_(2, 48, false);
+  this->set_digit_(1, 0x48, false);
+  this->set_digit_(2, 0x49, false);
   this->set_digit_(3, 0, false);
 }
 
